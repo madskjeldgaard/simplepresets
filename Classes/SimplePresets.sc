@@ -24,14 +24,14 @@ SimplePreset {
 	}
 
 	// Update the \current preset with current values of object
-	updateCurrent{|except|
-		var keysVals = this.objectParams(except: except ? []);
+	updateCurrent{
+		var keysVals = this.objectParams();
 		presets.put(\current, keysVals);
 	}
 
 	// Save to memory
 	saveCurrent{|presetName, overwrite=true|
-		var thispreset = this.getCurrent(object);
+		var thispreset = this.getCurrent();
 
 		// Default new preset name is date stamp 
 		var key = presetName ? "%".format(Date.getDate.stamp); 
@@ -142,7 +142,7 @@ SimplePreset {
 			var timegrain = 0.01;
 
 			// Update current preset
-			this.getCurrent(object);
+			this.getCurrent();
 
 			// Morphing envelope
 			env = if(envelope.isNil, {  
@@ -193,7 +193,7 @@ SimplePreset {
 	blendParams{|blend=0.5, name1, name2|
 		// Source preset
 		var thisPreset = if(name1.isNil, { 
-			this.getCurrent(object, except: nil);
+			this.getCurrent();
 		}, { 
 			this.getPreset(name1) 
 		});
