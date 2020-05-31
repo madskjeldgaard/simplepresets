@@ -12,17 +12,21 @@ SimplePreset {
 		presetExtension = ".simplepreset.scd";
 
 		this.checkPresetDir();
+		this.updateCurrent();
 	}
 
 	names{
 		^presets.keys.asArray
 	}
 
+	getCurrent{
+		^this.objectParams()
+	}
+
 	// Update the \current preset with current values of object
-	getCurrent{|except|
+	updateCurrent{|except|
 		var keysVals = this.objectParams(except: except ? []);
 		presets.put(\current, keysVals);
-		^keysVals
 	}
 
 	// Save to memory
@@ -44,7 +48,7 @@ SimplePreset {
 
 		"Saving preset %".format(key).postln;
 
-		^presets.put(key, thispreset)
+		presets.put(key, thispreset)
 	}
 
 	// Load from memory
@@ -96,7 +100,6 @@ SimplePreset {
 		if(presetDir.isFolder, { 
 			// Folder exists
 			"Preset folder found at %".format(presetDir.fullPath).postln;
-
 		}, {
 			// Folder does not exist
 
@@ -220,8 +223,9 @@ SimplePreset {
 		^blendedParams
 	}
 
-	objectParams{|except|
-		^object.getKeysValues(except: except ? []);
+	objectParams{
+		// TODO: Add exceptions?
+		^object.getKeysValues();
 	}
 
 	randAll{|maxRand=0.5|
@@ -230,7 +234,9 @@ SimplePreset {
 			#param, value = pair; 
 			value = rrand(0.0, maxRand); 
 			this.object.set(param, value)
-		}
+		};
+
+		this.updateCurrent();
 	}
 }
 
