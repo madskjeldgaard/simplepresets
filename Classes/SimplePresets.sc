@@ -16,7 +16,7 @@ SimplePreset {
 
 		// Initialize with random presets
 		initPresets.do{|pNum|
-			var randPreset = this.randAll();
+			var randPreset = this.randAll(1.0, updateCurrent: false, updateObject: false);
 			this.save(randPreset, "p%".format(pNum))
 		};
 
@@ -65,7 +65,7 @@ SimplePreset {
 	}
 
 	// Load from memory
-	loadPreset{|presetName|
+	load{|presetName|
 		var preset = presets.at(presetName);
 		"Presets contain:".postln;
 		preset.do{|pair| 
@@ -241,17 +241,27 @@ SimplePreset {
 		^object.getKeysValues();
 	}
 
-	randAll{|maxRand=0.5, updateCurrent=true|
-		this.objectParams.do{|pair| 
-			var param, value; 
+	randAll{|maxRand=0.5, updateCurrent=true, updateObject=true|
+		var params = this.objectParams.collect{|pair| 
+			var param, value, newPair; 
 			#param, value = pair; 
 			value = rrand(0.0, maxRand); 
-			this.object.set(param, value)
+
+			newPair = [param, value];
+
+			// Sometimes you do not want to set the object, but just create presets
+			if(updateObject, {
+				this.object.set(*newPair)
+			});
+
+			newPair
 		};
 
-		this.updateCurrent();
+		if(updateCurrent, {
+			this.updateCurrent();
+		});
 
-		^this.objectParams;
+		^params;
 	}
 }
 
