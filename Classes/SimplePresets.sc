@@ -137,7 +137,7 @@ SimplePreset {
 	}
 
 	morphTask{|envelope, blendTo, time=4|
-		Task({
+		^Task({
 			var env, envval;
 			var timegrain = 0.01;
 
