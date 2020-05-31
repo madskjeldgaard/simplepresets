@@ -59,10 +59,10 @@ SimplePreset {
 	}
 
 	// Save to memory
-	saveCurrent{|presetName, overwrite=true|
-		var preset = this.getCurrent();
-		this.save(preset, presetName: presetName, overwrite: overwrite)
-	}
+	// saveCurrent{|presetName, overwrite=true|
+	// 	var preset = this.getCurrent();
+	// 	this.save(preset, presetName: presetName, overwrite: overwrite)
+	// }
 
 	// Load from memory
 	load{|presetName|
