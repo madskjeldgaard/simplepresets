@@ -1,6 +1,6 @@
 // For Nodeproxy and Ndef
 SimplePreset {
-	var <object, initPresets, <presets, <presetDir, <presetExtension;
+	var <object, initPresets, <presets, <presetDir, <presetExtension, <task;
 
 	*new { |object, initPresets=8|
 		^super.newCopyArgs(object, initPresets).init();
@@ -188,11 +188,19 @@ SimplePreset {
 	}
 
 	morphTo{|targetPreset, time=4, envelope| 
-		var task = this.morphTask(
+
+		// Stop old task
+		if(task.notNil, { 
+			task.stop.reset;
+		});
+
+		task = this.morphTask(
 			envelope: envelope, 
 			targetPreset: targetPreset, 
 			time: time
 		);
+
+		this.updateCurrent;
 
 		^task.play
 	}
@@ -202,11 +210,16 @@ SimplePreset {
 	slouchTowards{|targetPreset, time=4|
 		var numSegments=16;
 		var levels = Array.rand(numSegments, 0.0001, 1.0);
-		var times = Array.rand(numSegments, 0.1, 1.0).normalizeSum;
+		var times = Array.rand(numSegments, 0.5, 1.0).normalizeSum;
 		var curves = Array.rand(numSegments, (-10.0), 10.0);
 		var env = Env(levels, times, curves);
 
 		this.morphTo(targetPreset: targetPreset, time: time, envelope: env);
+	}
+
+	blend{|blend=0.5, name1, name2|
+		this.blendParams(blend, name1, name2);
+		this.updateCurrent;
 	}
 
 	blendParams{|blend=0.5, name1, name2|
@@ -238,8 +251,6 @@ SimplePreset {
 		blendedParams.do{|pair|
 			object.set(*pair)
 		};
-
-		this.updateCurrent();
 
 		^blendedParams
 	}
