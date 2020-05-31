@@ -1,9 +1,9 @@
 // For Nodeproxy and Ndef
 SimplePreset {
-	var <object, <presets, <presetDir, <presetExtension;
+	var <object, initPresets, <presets, <presetDir, <presetExtension;
 
-	*new { |object|
-		^super.newCopyArgs(object).init();
+	*new { |object, initPresets=8|
+		^super.newCopyArgs(object, initPresets).init();
 	}
 
 	init {
@@ -13,6 +13,13 @@ SimplePreset {
 
 		this.checkPresetDir();
 		this.updateCurrent();
+
+		// Initialize with random presets
+		initPresets.do{|pNum|
+			var randPreset = this.randAll();
+			this.save(randPreset, "p%".format(pNum))
+		};
+
 	}
 
 	names{
@@ -30,8 +37,8 @@ SimplePreset {
 	}
 
 	// Save to memory
-	saveCurrent{|presetName, overwrite=true|
-		var thispreset = this.getCurrent();
+	save{|preset, presetName, overwrite=true|
+		var thispreset = preset ? this.getCurrent();
 
 		// Default new preset name is date stamp 
 		var key = presetName ? "%".format(Date.getDate.stamp); 
@@ -49,6 +56,12 @@ SimplePreset {
 		"Saving preset %".format(key).postln;
 
 		presets.put(key, thispreset)
+	}
+
+	// Save to memory
+	saveCurrent{|presetName, overwrite=true|
+		var preset = this.getCurrent();
+		this.save(preset, presetName: presetName, overwrite: overwrite)
 	}
 
 	// Load from memory
@@ -228,7 +241,7 @@ SimplePreset {
 		^object.getKeysValues();
 	}
 
-	randAll{|maxRand=0.5|
+	randAll{|maxRand=0.5, updateCurrent=true|
 		this.objectParams.do{|pair| 
 			var param, value; 
 			#param, value = pair; 
@@ -237,6 +250,8 @@ SimplePreset {
 		};
 
 		this.updateCurrent();
+
+		^this.objectParams;
 	}
 }
 
