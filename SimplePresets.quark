@@ -1,8 +1,8 @@
 (
   name: "SimplePresets",
   summary: "Does what it says on the tin",
-  version: "0.001",
-  schelp: "SimplePresets.schelp",
+  version: "0.002",
+  schelp: "SimplePreset.schelp",
   dependencies: ,
   license: "GNU GPL v3.0",
   copyright: "madskjeldgaard",
