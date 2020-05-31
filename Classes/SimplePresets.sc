@@ -52,8 +52,8 @@ SimplePreset {
 	}
 
 	// Load from memory
-	loadPresets{|presetName|
-		var preset = preset.at(presetName);
+	loadPreset{|presetName|
+		var preset = presets.at(presetName);
 		"Presets contain:".postln;
 		preset.do{|pair| 
 			var param, value;
@@ -136,7 +136,7 @@ SimplePreset {
 		^env
 	}
 
-	morphTask{|envelope, blendTo, time=4|
+	morphTask{|envelope, targetPreset, time=4|
 		^Task({
 			var env, envval;
 			var timegrain = 0.01;
@@ -162,17 +162,17 @@ SimplePreset {
 				envval = env.next.postln; 
 				// This extra control structure is to avoid returning nil
 				if(envval.notNil, {
-					this.blendParams(object, blend: envval, name1: \current, name2: blendTo);
+					this.blendParams(object, blend: envval, name1: \current, name2: targetPreset);
 				});
 				timegrain.wait; 
 			})
 		})
 	}
 
-	morph{|envelope, blendTo, time=4| 
+	morphTo{|targetPreset, time=4, envelope| 
 		var task = this.morphTask(
 			envelope: envelope, 
-			blendTo: blendTo, 
+			targetPreset: targetPreset, 
 			time: time
 		);
 
@@ -180,14 +180,14 @@ SimplePreset {
 	}
 
 	// Morph over random envelope
-	slouchTowards{|blendTo, time=4|
+	slouchTowards{|targetPreset, time=4|
 		var numSegments=8;
 		var levels = Array.rand(numSegments, 0.0001, 1.0);
 		var times = Array.rand(numSegments, 0.1, 1.0).normalizeSum;
 		var curves = Array.rand(numSegments, (-10.0), 10.0);
 		var env = Env(levels, times, curves);
 
-		this.morph(envelope: env, blendTo: blendTo, time: time);
+		this.morphTo(targetPreset: targetPreset, time: time, envelope: env);
 	}
 
 	blendParams{|blend=0.5, name1, name2|
