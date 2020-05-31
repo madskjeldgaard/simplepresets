@@ -134,6 +134,7 @@ SimplePreset {
 	morphEnv{|env, morphStart=0.0, morphEnd=0.5, time=4|
 		var maximum = env.levels.maxValue({|i| i });
 		var minimum = env.levels.minValue({|i| i });
+		var lastIndex = env.levels.size-1;
 
 		// Rescale old values to new values
 		env.levels = env.levels.linlin(
@@ -145,6 +146,9 @@ SimplePreset {
 
 		// Normalize times to match length requested in time arg
 		env.times = env.times.normalizeSum * time;
+
+		env.levels[0] = morphStart;
+		env.levels[lastIndex] = morphEnd;
 
 		^env
 	}
@@ -178,7 +182,8 @@ SimplePreset {
 					this.blendParams(object, blend: envval, name1: \current, name2: targetPreset);
 				});
 				timegrain.wait; 
-			})
+			});
+
 		})
 	}
 
@@ -193,8 +198,9 @@ SimplePreset {
 	}
 
 	// Morph over random envelope
+	// TODO: this isn't optimal yet 
 	slouchTowards{|targetPreset, time=4|
-		var numSegments=8;
+		var numSegments=16;
 		var levels = Array.rand(numSegments, 0.0001, 1.0);
 		var times = Array.rand(numSegments, 0.1, 1.0).normalizeSum;
 		var curves = Array.rand(numSegments, (-10.0), 10.0);
@@ -232,6 +238,8 @@ SimplePreset {
 		blendedParams.do{|pair|
 			object.set(*pair)
 		};
+
+		this.updateCurrent();
 
 		^blendedParams
 	}
